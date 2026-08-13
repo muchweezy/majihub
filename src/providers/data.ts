@@ -2,6 +2,10 @@ import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 import { CreateResponse, GetOneResponse, ListResponse } from "@/types";
 import { BACKEND_BASE_URL } from "@/constants";
 
+
+if (!BACKEND_BASE_URL) {
+    throw new Error("BACKEND_BASE_URL is not configured. Set up VITE_BACKEND_BASE_URL in the .env");
+}
 // Maji Hub API is versioned: https://api.majihub.co.ke/v1
 const options: CreateDataProviderOptions = {
     getList: {
@@ -89,11 +93,11 @@ const options: CreateDataProviderOptions = {
             return params;
         },
         mapResponse: async (response) => {
-            const payload: ListResponse = await response.json();
+            const payload: ListResponse = await response.clone().json();
             return payload.data ?? [];
         },
         getTotalCount: async (response) => {
-            const payload: ListResponse = await response.json();
+            const payload: ListResponse = await response.clone().json();
             return payload.pagination?.total ?? payload.data?.length ?? 0;
         },
     },
