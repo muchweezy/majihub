@@ -4,7 +4,7 @@ import {Search} from "lucide-react";
 import {useMemo, useState} from "react";
 import {Input} from "@/components/ui/input.tsx"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import {DEPARTMENT_OPTIONS} from "@/constants";
+import {DEPARTMENT_OPTIONS, NCWSC_DIVISION_OPTIONS} from "@/constants";
 import {CreateButton} from "@/components/refine-ui/buttons/create.tsx";
 import { useTable } from "@refinedev/react-table";
 import {Service} from "@/types";
@@ -15,12 +15,20 @@ import {DataTable} from "@/components/refine-ui/data-table/data-table.tsx";
 const ServicesList = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('all');
+    const [selectedDivision, setSelectedDivision] = useState('all');
 
-    const departmentFilters = selectedDepartment === 'all' ? [] : {
+    const departmentFilters = selectedDepartment === 'all'
+        ? []
+        : [{
+            field: 'department',
+            operator: 'eq' as const,
+            value: selectedDepartment,
+        }];
+    const divisionFilters = selectedDivision === 'all' ? [] : [{
         field: 'department',
         operator: 'eq' as const,
-        value: selectedDepartment
-    };
+        value: selectedDivision
+    }];
     const searchFilters = searchQuery ? [{
         field: 'name',
         operator: 'contains' as const,
@@ -47,7 +55,7 @@ const ServicesList = () => {
                 id: 'department',
                 accessorKey: 'department',
                 header: () => <p className="column-title">Department</p>,
-                size: 140,
+                size: 250,
                 cell: ({ getValue }) => <Badge variant="secondary">{getValue<string>()}</Badge>,
             },
             {
@@ -162,18 +170,18 @@ const ServicesList = () => {
             }
         ], []),
         refineCoreProps : {
-            resource: 'services',
+            resource: 'service',
             pagination: {
                 pageSize: 10,
                 mode: 'server'
             },
             filters: {
-                permanent: [...departmentFilters, ...searchFilters]
+                permanent: [...departmentFilters, ...searchFilters, ...divisionFilters]
             },
             sorters: {
                 initial: [
                     {
-                        field: 'id',
+                        field: 'code',
                         order: 'desc'
                     }
                 ]
@@ -218,6 +226,26 @@ const ServicesList = () => {
                                 ))}
                             </SelectContent>
                         </Select>
+                        <Select
+                            value={selectedDivision}
+                            onValueChange={setSelectedDivision}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Filter by division"/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">
+                                    All Divisions
+                                </SelectItem>
+                                {NCWSC_DIVISION_OPTIONS.map(department =>(
+                                    <SelectItem key={department.value}
+                                                value={department.value}>
+                                        {department.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
                         <CreateButton />
                     </div>
                 </div>
