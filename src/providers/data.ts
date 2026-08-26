@@ -1,6 +1,7 @@
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 import { CreateResponse, GetOneResponse, ListResponse } from "@/types";
 import { BACKEND_BASE_URL } from "@/constants";
+import { assertOk, createHttpError, parseJson, toHttpError } from "@/providers/http";
 
 
 if (!BACKEND_BASE_URL) {
@@ -92,12 +93,25 @@ const options: CreateDataProviderOptions = {
 
             return params;
         },
-        mapResponse: async (response) => {
-            const payload: ListResponse = await response.clone().json();
-            return payload.data ?? [];
+        mapResponse: async (response, { resource }) => {
+            const context = `Loading ${resource}`;
+            await assertOk(response, context);
+
+            const payload = await parseJson<ListResponse>(response, context);
+            if (!Array.isArray(payload.data)) {
+                throw createHttpError(
+                    `${context} failed: response did not contain a "data" array.`,
+                    response.status
+                );
+            }
+
+            return payload.data;
         },
-        getTotalCount: async (response) => {
-            const payload: ListResponse = await response.clone().json();
+        getTotalCount: async (response, { resource }) => {
+            const context = `Loading ${resource}`;
+            await assertOk(response, context);
+
+            const payload = await parseJson<ListResponse>(response, context);
             return payload.pagination?.total ?? payload.data?.length ?? 0;
         },
     },
@@ -105,17 +119,38 @@ const options: CreateDataProviderOptions = {
     create: {
         getEndpoint: ({ resource }) => resource,
         buildBodyParams: async ({ variables }) => variables,
-        mapResponse: async (response) => {
-            const json: CreateResponse = await response.json();
-            return json.data ?? {};
+        mapResponse: async (response, { resource }) => {
+            const context = `Creating ${resource}`;
+            const payload = await parseJson<CreateResponse>(response, context);
+
+            if (!payload.data) {
+                throw createHttpError(
+                    `${context} failed: response did not contain the created record.`,
+                    response.status
+                );
+            }
+
+            return payload.data;
         },
+        transformError: (response, { resource }) =>
+            toHttpError(response, `Creating ${resource}`),
     },
 
     getOne: {
         getEndpoint: ({ resource, id }) => `${resource}/${id}`,
-        mapResponse: async (response) => {
-            const json: GetOneResponse = await response.json();
-            return json.data ?? {};
+        mapResponse: async (response, { resource, id }) => {
+            const context = `Loading ${resource}/${id}`;
+            await assertOk(response, context);
+
+            const payload = await parseJson<GetOneResponse>(response, context);
+            if (!payload.data) {
+                throw createHttpError(
+                    `${context} failed: response did not contain a "data" object.`,
+                    response.status
+                );
+            }
+
+            return payload.data;
         },
     },
 };

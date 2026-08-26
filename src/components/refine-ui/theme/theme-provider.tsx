@@ -15,12 +15,31 @@ type ThemeProviderState = {
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(
+  undefined
+);
+
+const isTheme = (value: string | null): value is Theme =>
+  value === "dark" || value === "light" || value === "system";
+
+// Storage access throws when cookies/storage are blocked, so it must not break rendering.
+const readStoredTheme = (storageKey: string): Theme | undefined => {
+  try {
+    const stored = localStorage.getItem(storageKey);
+    return isTheme(stored) ? stored : undefined;
+  } catch (error) {
+    console.warn(`Could not read "${storageKey}" from localStorage.`, error);
+    return undefined;
+  }
 };
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const writeStoredTheme = (storageKey: string, theme: Theme): void => {
+  try {
+    localStorage.setItem(storageKey, theme);
+  } catch (error) {
+    console.warn(`Could not persist "${storageKey}" to localStorage.`, error);
+  }
+};
 
 export function ThemeProvider({
   children,
@@ -29,7 +48,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    () => readStoredTheme(storageKey) ?? defaultTheme
   );
 
   useEffect(() => {
@@ -53,7 +72,7 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
+      writeStoredTheme(storageKey, theme);
       setTheme(theme);
     },
   };
@@ -69,7 +88,7 @@ export function useTheme() {
   const context = useContext(ThemeProviderContext);
 
   if (context === undefined) {
-    console.error("useTheme must be used within a ThemeProvider");
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
 
   return context;

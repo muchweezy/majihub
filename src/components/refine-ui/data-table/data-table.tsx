@@ -4,10 +4,11 @@ import type { BaseRecord, HttpError } from "@refinedev/core";
 import type { UseTableReturnType } from "@refinedev/react-table";
 import type { Column } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { DataTablePagination } from "@/components/refine-ui/data-table/data-table-pagination";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -40,6 +41,7 @@ export function DataTable<TData extends BaseRecord>({
   const columns = getAllColumns();
   const leafColumns = table.reactTable.getAllLeafColumns();
   const isLoading = tableQuery.isLoading;
+  const error = tableQuery.error;
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -159,6 +161,14 @@ export function DataTable<TData extends BaseRecord>({
                   </TableCell>
                 </TableRow>
               </>
+            ) : error ? (
+              <DataTableError
+                columnsLength={columns.length}
+                message={error.message}
+                onRetry={() => {
+                  void tableQuery.refetch();
+                }}
+              />
             ) : getRowModel().rows?.length ? (
               getRowModel().rows.map((row) => {
                 return (
@@ -198,7 +208,7 @@ export function DataTable<TData extends BaseRecord>({
           </TableBody>
         </Table>
       </div>
-      {!isLoading && getRowModel().rows?.length > 0 && (
+      {!isLoading && !error && getRowModel().rows?.length > 0 && (
         <DataTablePagination
           currentPage={currentPage}
           pageCount={pageCount}
@@ -209,6 +219,55 @@ export function DataTable<TData extends BaseRecord>({
         />
       )}
     </div>
+  );
+}
+
+function DataTableError({
+  columnsLength,
+  message,
+  onRetry,
+}: {
+  columnsLength: number;
+  message?: string;
+  onRetry: () => void;
+}) {
+  return (
+    <TableRow className="hover:bg-transparent">
+      <TableCell
+        colSpan={columnsLength}
+        className={cn("text-center")}
+        style={{ height: "490px" }}
+      >
+        <div
+          role="alert"
+          className={cn(
+            "flex",
+            "flex-col",
+            "items-center",
+            "justify-center",
+            "gap-2"
+          )}
+        >
+          <AlertCircle className={cn("h-8", "w-8", "text-destructive")} />
+          <div className={cn("text-lg", "font-semibold", "text-foreground")}>
+            Failed to load data
+          </div>
+          <div
+            className={cn(
+              "text-sm",
+              "text-muted-foreground",
+              "max-w-lg",
+              "break-words"
+            )}
+          >
+            {message ?? "An unexpected error occurred."}
+          </div>
+          <Button variant="outline" className="mt-2" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 
