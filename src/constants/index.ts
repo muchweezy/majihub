@@ -1,6 +1,13 @@
 
 
 
+import {
+    toLabeledOptions,
+    toOptions,
+    toSlugOptions,
+    toValuedOptions,
+} from "@/lib/options";
+
 // ============================================================
 //  MAJI HUB — SYSTEM CONSTANTS
 //  Nairobi City Water & Sewerage Company (NCWSC)
@@ -23,10 +30,7 @@ export const DEPARTMENTS = [
     'Westlands',
 ];
 
-export const DEPARTMENT_OPTIONS = DEPARTMENTS.map((dept) => ({
-    value: dept,
-    label: dept,
-}));
+export const DEPARTMENT_OPTIONS = toOptions(DEPARTMENTS);
 
 // ─────────────────────────────────────────────────────────────
 // ZONES  (distribution zones within each department)
@@ -93,10 +97,7 @@ export const ZONES = [
     'Spring Valley',
 ];
 
-export const ZONE_OPTIONS = ZONES.map((zone) => ({
-    value: zone,
-    label: zone,
-}));
+export const ZONE_OPTIONS = toOptions(ZONES);
 
 // Zones grouped by Department for cascading dropdowns
 export const ZONES_BY_DEPARTMENT: Record<string, string[]> = {
@@ -128,10 +129,7 @@ export const SERVICE_MODULES = [
     'Field Operations',
 ];
 
-export const SERVICE_MODULE_OPTIONS = SERVICE_MODULES.map((mod) => ({
-    value: mod,
-    label: mod,
-}));
+export const SERVICE_MODULE_OPTIONS = toOptions(SERVICE_MODULES);
 
 // ─────────────────────────────────────────────────────────────
 // ACCOUNT TYPES
@@ -147,10 +145,7 @@ export const ACCOUNT_TYPES = [
     'Informal Settlement',
 ];
 
-export const ACCOUNT_TYPE_OPTIONS = ACCOUNT_TYPES.map((type) => ({
-    value: type.toLowerCase().replace(/ \/ /g, '_').replace(/\s/g, '_'),
-    label: type,
-}));
+export const ACCOUNT_TYPE_OPTIONS = toSlugOptions(ACCOUNT_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // TARIFF TIERS  (NCWSC progressive tariff structure)
@@ -163,10 +158,10 @@ export const TARIFF_TIERS = [
     'Tier 4 (Above 50 m³)',
 ];
 
-export const TARIFF_TIER_OPTIONS = TARIFF_TIERS.map((tier, i) => ({
-    value: `tier${i + 1}`,
-    label: tier,
-}));
+export const TARIFF_TIER_OPTIONS = toLabeledOptions(
+    TARIFF_TIERS,
+    (_tier, index) => `tier${index + 1}`,
+);
 
 // Tariff rates (KES per m³) — current schedule
 export const TARIFF_RATES: Record<string, { waterKES: number; sewerageKES: number; label: string }> = {
@@ -192,10 +187,7 @@ export const USER_ROLES = [
     'Super Admin',
 ];
 
-export const USER_ROLE_OPTIONS = USER_ROLES.map((role) => ({
-    value: role.toLowerCase().replace(/\s/g, '_'),
-    label: role,
-}));
+export const USER_ROLE_OPTIONS = toSlugOptions(USER_ROLES);
 
 // ─────────────────────────────────────────────────────────────
 // SERVICE REQUEST STATUSES
@@ -212,10 +204,7 @@ export const REQUEST_STATUSES = [
     'Cancelled',
 ];
 
-export const REQUEST_STATUS_OPTIONS = REQUEST_STATUSES.map((status) => ({
-    value: status.toLowerCase().replace(/\s/g, '_'),
-    label: status,
-}));
+export const REQUEST_STATUS_OPTIONS = toSlugOptions(REQUEST_STATUSES);
 
 // Status badge colour mapping (Tailwind / CSS class hints)
 export const REQUEST_STATUS_COLORS: Record<string, string> = {
@@ -243,10 +232,7 @@ export const WORK_ORDER_STATUSES = [
     'Cancelled',
 ];
 
-export const WORK_ORDER_STATUS_OPTIONS = WORK_ORDER_STATUSES.map((status) => ({
-    value: status.toLowerCase().replace(/\s/g, '_'),
-    label: status,
-}));
+export const WORK_ORDER_STATUS_OPTIONS = toSlugOptions(WORK_ORDER_STATUSES);
 
 // ─────────────────────────────────────────────────────────────
 // WORK ORDER TYPES
@@ -266,10 +252,7 @@ export const WORK_ORDER_TYPES = [
     'Revenue Protection',
 ];
 
-export const WORK_ORDER_TYPE_OPTIONS = WORK_ORDER_TYPES.map((type) => ({
-    value: type.toLowerCase().replace(/\s/g, '_'),
-    label: type,
-}));
+export const WORK_ORDER_TYPE_OPTIONS = toSlugOptions(WORK_ORDER_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // FAULT TYPES
@@ -289,10 +272,7 @@ export const FAULT_TYPES = [
     'Meter Bypass',
 ];
 
-export const FAULT_TYPE_OPTIONS = FAULT_TYPES.map((fault) => ({
-    value: fault.toLowerCase().replace(/\s\//g, '').replace(/\s/g, '_'),
-    label: fault,
-}));
+export const FAULT_TYPE_OPTIONS = toSlugOptions(FAULT_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // FAULT SEVERITY LEVELS
@@ -305,10 +285,7 @@ export const FAULT_SEVERITIES = [
     'Critical',
 ];
 
-export const FAULT_SEVERITY_OPTIONS = FAULT_SEVERITIES.map((sev) => ({
-    value: sev.toLowerCase(),
-    label: sev,
-}));
+export const FAULT_SEVERITY_OPTIONS = toSlugOptions(FAULT_SEVERITIES);
 
 export const FAULT_SEVERITY_COLORS: Record<string, string> = {
     minor:    '#00c896',
@@ -328,10 +305,7 @@ export const PRIORITY_LEVELS = [
     'Critical',
 ];
 
-export const PRIORITY_OPTIONS = PRIORITY_LEVELS.map((p) => ({
-    value: p.toLowerCase(),
-    label: p,
-}));
+export const PRIORITY_OPTIONS = toSlugOptions(PRIORITY_LEVELS);
 
 export const PRIORITY_COLORS: Record<string, string> = {
     low:      '#00c896',
@@ -354,10 +328,7 @@ export const BILL_STATUSES = [
     'Waived',
 ];
 
-export const BILL_STATUS_OPTIONS = BILL_STATUSES.map((status) => ({
-    value: status.toLowerCase(),
-    label: status,
-}));
+export const BILL_STATUS_OPTIONS = toSlugOptions(BILL_STATUSES);
 
 export const BILL_STATUS_COLORS: Record<string, string> = {
     draft:    '#666e80',
@@ -383,10 +354,7 @@ export const PAYMENT_METHODS = [
     'Direct Debit',
 ];
 
-export const PAYMENT_METHOD_OPTIONS = PAYMENT_METHODS.map((method) => ({
-    value: method.toLowerCase().replace(/ \/ /g, '_').replace(/\s/g, '_').replace(/[()]/g, ''),
-    label: method,
-}));
+export const PAYMENT_METHOD_OPTIONS = toSlugOptions(PAYMENT_METHODS);
 
 export const PAYMENT_METHOD_ICONS: Record<string, string> = {
     mpesa:              '📱',
@@ -411,10 +379,7 @@ export const PAYMENT_STATUSES = [
     'Refunded',
 ];
 
-export const PAYMENT_STATUS_OPTIONS = PAYMENT_STATUSES.map((status) => ({
-    value: status.toLowerCase(),
-    label: status,
-}));
+export const PAYMENT_STATUS_OPTIONS = toSlugOptions(PAYMENT_STATUSES);
 
 // ─────────────────────────────────────────────────────────────
 // METER TYPES
@@ -428,10 +393,7 @@ export const METER_TYPES = [
     'Prepaid',
 ];
 
-export const METER_TYPE_OPTIONS = METER_TYPES.map((type) => ({
-    value: type.toLowerCase().replace(/\s/g, '_'),
-    label: type,
-}));
+export const METER_TYPE_OPTIONS = toSlugOptions(METER_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // METER STATUSES
@@ -446,10 +408,7 @@ export const METER_STATUSES = [
     'Pending Installation',
 ];
 
-export const METER_STATUS_OPTIONS = METER_STATUSES.map((status) => ({
-    value: status.toLowerCase().replace(/\s/g, '_'),
-    label: status,
-}));
+export const METER_STATUS_OPTIONS = toSlugOptions(METER_STATUSES);
 
 // ─────────────────────────────────────────────────────────────
 // METER READING METHODS
@@ -462,10 +421,9 @@ export const METER_READING_METHODS = [
     'Estimated',
 ];
 
-export const METER_READING_METHOD_OPTIONS = METER_READING_METHODS.map((method) => ({
-    value: method.toLowerCase().replace(/ *\(.*?\)/g, '').trim().replace(/\s/g, '_'),
-    label: method,
-}));
+export const METER_READING_METHOD_OPTIONS = toSlugOptions(METER_READING_METHODS, {
+    stripParentheticals: true,
+});
 
 // ─────────────────────────────────────────────────────────────
 // CUSTOMER STATUSES
@@ -480,10 +438,7 @@ export const CUSTOMER_STATUSES = [
     'Deceased',
 ];
 
-export const CUSTOMER_STATUS_OPTIONS = CUSTOMER_STATUSES.map((status) => ({
-    value: status.toLowerCase().replace(/\s/g, '_'),
-    label: status,
-}));
+export const CUSTOMER_STATUS_OPTIONS = toSlugOptions(CUSTOMER_STATUSES);
 
 export const CUSTOMER_STATUS_COLORS: Record<string, string> = {
     active:             '#00ff88',
@@ -506,10 +461,7 @@ export const SERVICE_STATUSES = [
     'Scheduled Maintenance',
 ];
 
-export const SERVICE_STATUS_OPTIONS = SERVICE_STATUSES.map((status) => ({
-    value: status.toLowerCase().replace(/\s/g, '_'),
-    label: status,
-}));
+export const SERVICE_STATUS_OPTIONS = toSlugOptions(SERVICE_STATUSES);
 
 // ─────────────────────────────────────────────────────────────
 // NOTIFICATION CHANNELS
@@ -523,10 +475,7 @@ export const NOTIFICATION_CHANNELS = [
     'IVR Call',
 ];
 
-export const NOTIFICATION_CHANNEL_OPTIONS = NOTIFICATION_CHANNELS.map((channel) => ({
-    value: channel.toLowerCase().replace(/\s/g, '_'),
-    label: channel,
-}));
+export const NOTIFICATION_CHANNEL_OPTIONS = toSlugOptions(NOTIFICATION_CHANNELS);
 
 // ─────────────────────────────────────────────────────────────
 // CONSUMPTION ALERT TYPES
@@ -542,10 +491,7 @@ export const CONSUMPTION_ALERT_TYPES = [
     'Meter Stall',
 ];
 
-export const CONSUMPTION_ALERT_TYPE_OPTIONS = CONSUMPTION_ALERT_TYPES.map((type) => ({
-    value: type.toLowerCase().replace(/\s/g, '_'),
-    label: type,
-}));
+export const CONSUMPTION_ALERT_TYPE_OPTIONS = toSlugOptions(CONSUMPTION_ALERT_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // DOCUMENT TYPES  (for uploads on requests/work orders)
@@ -570,10 +516,7 @@ export const DOCUMENT_TYPES = [
     'Other',
 ];
 
-export const DOCUMENT_TYPE_OPTIONS = DOCUMENT_TYPES.map((doc) => ({
-    value: doc.toLowerCase().replace(/\//g, '').replace(/\s/g, '_'),
-    label: doc,
-}));
+export const DOCUMENT_TYPE_OPTIONS = toSlugOptions(DOCUMENT_TYPES);
 
 // ─────────────────────────────────────────────────────────────
 // PIPE SIZES  (for engineering / work orders)
@@ -599,10 +542,7 @@ export const PIPE_SIZES_MM = [
     '630mm',
 ];
 
-export const PIPE_SIZE_OPTIONS = PIPE_SIZES_MM.map((size) => ({
-    value: size,
-    label: size,
-}));
+export const PIPE_SIZE_OPTIONS = toOptions(PIPE_SIZES_MM);
 
 // ─────────────────────────────────────────────────────────────
 // PIPE MATERIALS
@@ -620,10 +560,7 @@ export const PIPE_MATERIALS = [
     'AC (Asbestos Cement)',
 ];
 
-export const PIPE_MATERIAL_OPTIONS = PIPE_MATERIALS.map((mat) => ({
-    value: mat.toLowerCase().replace(/[()]/g, '').replace(/\s/g, '_'),
-    label: mat,
-}));
+export const PIPE_MATERIAL_OPTIONS = toSlugOptions(PIPE_MATERIALS);
 
 // ─────────────────────────────────────────────────────────────
 // LANGUAGE OPTIONS
@@ -634,10 +571,9 @@ export const LANGUAGES = [
     'Kiswahili',
 ];
 
-export const LANGUAGE_OPTIONS = LANGUAGES.map((lang) => ({
-    value: lang === 'English' ? 'en' : 'sw',
-    label: lang,
-}));
+export const LANGUAGE_OPTIONS = toLabeledOptions(LANGUAGES, (lang) =>
+    lang === 'English' ? 'en' : 'sw',
+);
 
 // ─────────────────────────────────────────────────────────────
 // REPORT PERIODS  (for analytics / statement requests)
@@ -657,10 +593,7 @@ export const REPORT_PERIODS = [
     'Custom Range',
 ];
 
-export const REPORT_PERIOD_OPTIONS = REPORT_PERIODS.map((period) => ({
-    value: period.toLowerCase().replace(/\s/g, '_'),
-    label: period,
-}));
+export const REPORT_PERIOD_OPTIONS = toSlugOptions(REPORT_PERIODS);
 
 // ─────────────────────────────────────────────────────────────
 // BILLING CYCLES
@@ -672,10 +605,9 @@ export const BILLING_CYCLES = [
     'Quarterly',
 ];
 
-export const BILLING_CYCLE_OPTIONS = BILLING_CYCLES.map((cycle) => ({
-    value: cycle.toLowerCase().replace(/-/g, '_'),
-    label: cycle,
-}));
+export const BILLING_CYCLE_OPTIONS = toSlugOptions(BILLING_CYCLES, {
+    hyphensAsSeparators: true,
+});
 
 // ─────────────────────────────────────────────────────────────
 // SLA HOURS  (standard SLA values for UI pickers)
@@ -683,10 +615,11 @@ export const BILLING_CYCLE_OPTIONS = BILLING_CYCLES.map((cycle) => ({
 
 export const SLA_HOURS = [1, 2, 4, 8, 12, 24, 48, 72, 96, 120, 168];
 
-export const SLA_HOUR_OPTIONS = SLA_HOURS.map((h) => ({
-    value: h,
-    label: h < 24 ? `${h} hour${h === 1 ? '' : 's'}` : `${h / 24} day${h / 24 === 1 ? '' : 's'}`,
-}));
+export const SLA_HOUR_OPTIONS = toValuedOptions(SLA_HOURS, (hours) =>
+    hours < 24
+        ? `${hours} hour${hours === 1 ? '' : 's'}`
+        : `${hours / 24} day${hours / 24 === 1 ? '' : 's'}`,
+);
 
 // ─────────────────────────────────────────────────────────────
 // SYSTEM-WIDE STATUS  (for general service / system health)
@@ -700,10 +633,7 @@ export const SYSTEM_HEALTH_STATUSES = [
     'Maintenance',
 ];
 
-export const SYSTEM_HEALTH_STATUS_OPTIONS = SYSTEM_HEALTH_STATUSES.map((s) => ({
-    value: s.toLowerCase().replace(/\s/g, '_'),
-    label: s,
-}));
+export const SYSTEM_HEALTH_STATUS_OPTIONS = toSlugOptions(SYSTEM_HEALTH_STATUSES);
 
 export const SYSTEM_HEALTH_COLORS: Record<string, string> = {
     operational:          '#00ff88',
@@ -735,10 +665,7 @@ export const NCWSC_DIVISIONS = [
     'Communications & Public Relations',
 ];
 
-export const NCWSC_DIVISION_OPTIONS = NCWSC_DIVISIONS.map((div) => ({
-    value: div.toLowerCase().replace(/ & /g, '_').replace(/\s/g, '_'),
-    label: div,
-}));
+export const NCWSC_DIVISION_OPTIONS = toSlugOptions(NCWSC_DIVISIONS);
 
 // ─────────────────────────────────────────────────────────────
 // CUSTOMER SATISFACTION RATINGS
