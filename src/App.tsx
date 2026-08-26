@@ -18,6 +18,7 @@ import {Layout} from "@/components/refine-ui/layout/layout.tsx";
 import {BookOpen} from "lucide-react";
 import ServicesList from "@/pages/services/list.tsx";
 import ServicesCreate from "@/pages/services/create.tsx";
+import {ErrorComponent} from "@/components/refine-ui/layout/error-component.tsx";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
                           <Route index element={<ServicesList />} />
                           <Route path='create' element={<ServicesCreate />} />
                       </Route>
+                      <Route path='*' element={<ErrorComponent />} />
                   </Route>
 
               </Routes>
