@@ -31,6 +31,7 @@ ENV NODE_ENV production
 RUN npm install -g serve
 
 COPY --from=builder /app/refine/dist ./
+COPY --from=builder /app/refine/serve.json ./serve.json
 
 USER refine
 

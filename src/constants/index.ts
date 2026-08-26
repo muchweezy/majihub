@@ -869,9 +869,26 @@ const getEnvVar = (key: string): string => {
     return value;
 };
 
+// Rejects cleartext and non-http(s) API origins outside local development so
+// customer data and credentials are never sent over an untrusted transport.
+const requireSecureUrl = (key: string): string => {
+    const value = getEnvVar(key);
+    let url: URL;
+    try {
+        url = new URL(value);
+    } catch {
+        throw new Error(`${key} must be an absolute URL, got: ${value}`);
+    }
+    const isLocalhost = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+    if (url.protocol !== "https:" && !(import.meta.env.DEV && isLocalhost)) {
+        throw new Error(`${key} must use https, got: ${url.protocol}//${url.host}`);
+    }
+    return value;
+};
+
 // export const CLOUDINARY_UPLOAD_URL = getEnvVar("VITE_CLOUDINARY_UPLOAD_URL");
 // export const CLOUDINARY_CLOUD_NAME = getEnvVar("VITE_CLOUDINARY_CLOUD_NAME");
-export const BACKEND_BASE_URL = getEnvVar("VITE_BACKEND_BASE_URL");
+export const BACKEND_BASE_URL = requireSecureUrl("VITE_BACKEND_BASE_URL");
 
 export const BASE_URL =  import.meta.env.VITE_API_URL;
 // export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY

@@ -1,6 +1,7 @@
 import { Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import type { PropsWithChildren } from "react";
 
 import routerProvider, {
   DocumentTitleHandler,
@@ -19,12 +20,24 @@ import {BookOpen} from "lucide-react";
 import ServicesList from "@/pages/services/list.tsx";
 import ServicesCreate from "@/pages/services/create.tsx";
 
+const DEVTOOLS_ENABLED = import.meta.env.DEV;
+
+const Devtools = ({ children }: PropsWithChildren) =>
+  DEVTOOLS_ENABLED ? (
+    <DevtoolsProvider>
+      {children}
+      <DevtoolsPanel />
+    </DevtoolsProvider>
+  ) : (
+    <>{children}</>
+  );
+
 function App() {
   return (
     <BrowserRouter>
       <RefineKbarProvider>
         <ThemeProvider>
-          <DevtoolsProvider>
+          <Devtools>
             <Refine
               dataProvider={dataProvider}
               notificationProvider={useNotificationProvider()}
@@ -67,8 +80,7 @@ function App() {
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />
             </Refine>
-            <DevtoolsPanel />
-          </DevtoolsProvider>
+          </Devtools>
         </ThemeProvider>
       </RefineKbarProvider>
     </BrowserRouter>
